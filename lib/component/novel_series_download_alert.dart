@@ -55,7 +55,7 @@ class _NovelSeriesDownloadAlertState
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        data?.novelSeriesDetail.title ?? I18n.of(context).download_series_novel,
+                        data?.novelSeriesDetail.title ?? I18n.of(context).download_novel_series,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleMedium,
