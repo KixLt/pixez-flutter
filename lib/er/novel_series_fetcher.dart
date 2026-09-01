@@ -8,6 +8,7 @@ import 'package:path_provider/path_provider.dart';
 import 'package:pixez/er/lprinter.dart';
 import 'package:pixez/exts.dart';
 import 'package:pixez/i18n.dart';
+import 'package:pixez/main.dart';
 import 'package:pixez/models/novel_task_persist.dart';
 import 'package:pixez/models/novel_web_response.dart';
 import 'package:pixez/network/api_client.dart';
@@ -179,20 +180,33 @@ class NovelSeriesFetcher {
     _updateBanner();
     try {
       final buffer = StringBuffer();
-      for (var i = 0; i < bean.novelIds.length; i++) {
-        final response = await apiClient.webviewNovel(bean.novelIds[i]);
-        final json = parseNovelJsonFromHtml(response.data);
-        if (json == null) {
-          continue;
+      // 小说并发下载, 数量受「最大同时下载任务数量」设置限制
+      final contents = List<String?>.filled(bean.novelIds.length, null);
+      final limit = userSetting.maxRunningTask < 1
+          ? 1
+          : userSetting.maxRunningTask;
+      var done = 0;
+      var index = 0;
+      Future<void> fetch() async {
+        while (true) {
+          final i = index++;
+          if (i >= bean.novelIds.length) break;
+          final response = await apiClient.webviewNovel(bean.novelIds[i]);
+          final json = parseNovelJsonFromHtml(response.data);
+          if (json != null) {
+            final webResponse = NovelWebResponse.fromJson(jsonDecode(json));
+            contents[i] = '${webResponse.title}\n\n${webResponse.text}\n\n';
+          }
+          done++;
+          job.min = done;
+          await _updateProgress(bean, done);
+          _updateBanner();
         }
-        final webResponse = NovelWebResponse.fromJson(jsonDecode(json));
-        buffer.writeln(webResponse.title);
-        buffer.writeln();
-        buffer.writeln(webResponse.text);
-        buffer.writeln();
-        job.min = i + 1;
-        await _updateProgress(bean, i + 1);
-        _updateBanner();
+      }
+
+      await Future.wait(List.generate(limit, (_) => fetch()));
+      for (final content in contents) {
+        if (content != null) buffer.write(content);
       }
       final content = buffer.toString();
       if (Platform.isAndroid) {
