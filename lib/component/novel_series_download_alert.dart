@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:pixez/i18n.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pixez/component/pixiv_image.dart';
 import 'package:pixez/models/novel_recom_response.dart';
@@ -54,7 +55,7 @@ class _NovelSeriesDownloadAlertState
                     child: Align(
                       alignment: Alignment.centerLeft,
                       child: Text(
-                        data?.novelSeriesDetail.title ?? '下载系列小说',
+                        data?.novelSeriesDetail.title ?? I18n.of(context).download_series_novel,
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: Theme.of(context).textTheme.titleMedium,
@@ -112,7 +113,7 @@ class _NovelSeriesDownloadAlertState
           value: allSelected,
           dense: true,
           title: Text(
-            allSelected ? '取消全选' : '全选',
+            allSelected ? I18n.of(context).cancel_select_all : I18n.of(context).select_all,
           ),
           controlAffinity: ListTileControlAffinity.leading,
           onChanged: novels.isEmpty
@@ -137,7 +138,7 @@ class _NovelSeriesDownloadAlertState
             children: [
               Expanded(
                 child: Text(
-                  '已选择 ${_selectedIds.length} / $total',
+                  '${I18n.of(context).selected} ${_selectedIds.length} / $total',
                   style: Theme.of(context).textTheme.bodySmall,
                 ),
               ),
@@ -145,7 +146,7 @@ class _NovelSeriesDownloadAlertState
                 onPressed: () {
                   Navigator.of(context).pop();
                 },
-                child: const Text('取消'),
+                child: Text(I18n.of(context).cancel),
               ),
               TextButton(
                 onPressed: _selectedIds.isEmpty
@@ -157,7 +158,7 @@ class _NovelSeriesDownloadAlertState
                           ),
                         );
                       },
-                child: const Text('确定'),
+                child: Text(I18n.of(context).ok),
               ),
             ],
           ),

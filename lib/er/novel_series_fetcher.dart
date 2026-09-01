@@ -7,6 +7,7 @@ import 'package:path/path.dart' as Path;
 import 'package:path_provider/path_provider.dart';
 import 'package:pixez/er/lprinter.dart';
 import 'package:pixez/exts.dart';
+import 'package:pixez/i18n.dart';
 import 'package:pixez/models/novel_task_persist.dart';
 import 'package:pixez/models/novel_web_response.dart';
 import 'package:pixez/network/api_client.dart';
@@ -40,7 +41,6 @@ class NovelSeriesFetcher {
   NovelTaskPersistProvider novelTaskPersistProvider = NovelTaskPersistProvider();
   LruMap<String, JobEntity> jobMaps = LruMap();
 
-  /// 顶部"下载中"提示
   CancelFunc? _bannerCancel;
   final ValueNotifier<String> _bannerText = ValueNotifier('');
 
@@ -107,7 +107,7 @@ class NovelSeriesFetcher {
     }
   }
 
-  /// 顶部"下载中"提示
+  // 顶部"下载中"提示
   void _updateBanner() {
     if (urlPool.isEmpty) {
       _hideBanner();
@@ -121,7 +121,7 @@ class NovelSeriesFetcher {
       final job = jobMaps[key];
       final done = job?.min ?? 0;
       final total = job?.max ?? bean.novelIds.length;
-      parts.add('${bean.seriesTitle.split('').take(2).join('')} $done/$total');
+      parts.add('${bean.seriesTitle.split('').take(2).join('')}... $done/$total');
     }
     _showBanner(parts.join('、'));
   }
@@ -154,7 +154,7 @@ class NovelSeriesFetcher {
                     child: CircularProgressIndicator(strokeWidth: 2),
                   ),
                   const SizedBox(width: 10),
-                  Text('下载中 $value'),
+                  Text('${I18n.of(context).downloading} $value'),
                 ],
               ),
             ),

@@ -135,7 +135,7 @@ class NovelSeriesPage extends HookConsumerWidget {
           children: [
             if (ref.read(novelSeriesProvider) != null)
               ListTile(
-                title: const Text('下载系列小说'),
+                title: Text(I18n.of(context).download_novel_series),
                 leading: const Icon(Icons.download),
                 onTap: () async {
                   Navigator.of(context).pop();
@@ -167,7 +167,7 @@ class NovelSeriesPage extends HookConsumerWidget {
             Builder(
               builder: (context) {
                 return ListTile(
-                  title: const Text('分享'),
+                  title: Text(I18n.of(context).share),
                   leading: const Icon(Icons.share),
                   onTap: () {
                     Navigator.of(context).pop();
